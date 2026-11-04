@@ -171,6 +171,7 @@ import TransfersIndicator from '@/components/common/TransfersIndicator.vue'
 import DesktopUpdatePrompt from '@/components/updater/DesktopUpdatePrompt.vue'
 import AndroidUpdateNotice from '@/components/updater/AndroidUpdateNotice.vue'
 import { needsInstanceSelection, getStoredInstance, isTauriRuntime } from '@/services/instanceConfig'
+import { startRpcBridge, stopRpcBridge } from '@/services/rpcBridge'
 import { isAndroidApp } from '@/services/androidReleaseNotice'
 import { isTauriDesktop } from '@/utils/platform'
 import { useStatusBarTheme } from '@/composables/useStatusBarTheme'
@@ -255,6 +256,7 @@ const handleSwitchToChat = () => {
 
 onMounted(() => {
   warmLazyUi()
+  void startRpcBridge()
   // Theme/language settings load in the background; rendering does not wait.
   initializeAppSettings().catch(err => {
     debug.error('Failed to initialize app settings:', err)
@@ -306,6 +308,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  stopRpcBridge()
   if (hapticClickHandler) {
     document.removeEventListener('click', hapticClickHandler)
     hapticClickHandler = null
