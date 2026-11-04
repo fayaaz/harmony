@@ -172,8 +172,15 @@ pub fn run() {
   let context = tauri::generate_context!();
 
   #[cfg(target_os = "linux")]
-  if runtime::hand_off_to_running_instance(&context.config().identifier) {
-    return;
+  {
+    if runtime::hand_off_to_running_instance(&context.config().identifier) {
+      return;
+    }
+    let args: Vec<String> = std::env::args().collect();
+    if commands::rpc::parse_action(&args).is_some() {
+      eprintln!("no running Harmony instance");
+      std::process::exit(1);
+    }
   }
 
   let builder = tauri::Builder::default();
@@ -188,7 +195,10 @@ pub fn run() {
 
   #[cfg(desktop)]
   let builder = builder
-    .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
+    .plugin(tauri_plugin_single_instance::init(|app, args, _cwd| {
+      if commands::rpc::handle(app, &args) {
+        return;
+      }
       reveal_main(app);
     }))
     .plugin(tauri_plugin_autostart::init(
@@ -253,6 +263,8 @@ pub fn run() {
     commands::presence::presence_stop,
     commands::presence::presence_current,
     commands::ptt::ptt_set_binding,
+    commands::rpc::rpc_set_enabled,
+    commands::rpc::rpc_status,
     overlay::overlay_open,
     overlay::overlay_close,
     overlay::overlay_set_interactive,
