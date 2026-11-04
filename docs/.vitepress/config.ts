@@ -37,7 +37,10 @@ const sidebar: DefaultTheme.Sidebar = {
     },
     {
       text: 'Reference',
-      items: [{ text: 'Keyboard shortcuts', link: '/use/keyboard-shortcuts' }],
+      items: [
+        { text: 'Keyboard shortcuts', link: '/use/keyboard-shortcuts' },
+        { text: 'External control (RPC)', link: '/use/rpc' },
+      ],
     },
   ],
   '/run/': [
