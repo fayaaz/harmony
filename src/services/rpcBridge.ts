@@ -15,12 +15,41 @@ export function isRpcEnabled(): boolean {
 }
 
 async function runDefaultAction(action: string): Promise<void> {
-  if (action !== 'togglemute') return
+  if (
+    action !== 'togglemute' &&
+    action !== 'toggledeaf' &&
+    action !== 'togglecamera' &&
+    action !== 'togglescreenshare'
+  ) {
+    return
+  }
   try {
     const { useUnifiedVoiceChannelStore } = await import('@/stores/unifiedVoiceChannel')
-    await useUnifiedVoiceChannelStore().toggleMute()
+    const store = useUnifiedVoiceChannelStore()
+    switch (action) {
+      case 'togglemute':
+        await store.toggleMute()
+        break
+      case 'toggledeaf':
+        await store.toggleDeafen()
+        break
+      case 'togglecamera':
+        if (!store.isConnected) {
+          debug.log('[RPC] ignoring togglecamera while disconnected')
+          return
+        }
+        await store.toggleVideo()
+        break
+      case 'togglescreenshare':
+        if (!store.isConnected) {
+          debug.log('[RPC] ignoring togglescreenshare while disconnected')
+          return
+        }
+        await store.toggleScreenShare()
+        break
+    }
   } catch (error) {
-    debug.warn('[RPC] togglemute failed:', error)
+    debug.warn(`[RPC] ${action} failed:`, error)
   }
 }
 
