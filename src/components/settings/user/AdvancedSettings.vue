@@ -90,6 +90,17 @@
 
       <div class="setting-item">
         <div class="setting-info">
+          <h4 class="setting-label" :id="`${a11yId}-t8`">{{ $t('settings.advanced.rpc.name') }}</h4>
+          <p class="setting-description" :id="`${a11yId}-t8-desc`">{{ $t('settings.advanced.rpc.description') }}</p>
+          <p class="setting-description">{{ $t('settings.advanced.rpc.hint') }}</p>
+        </div>
+        <div class="setting-control">
+          <ToggleSwitch :labelledby="`${a11yId}-t8`" :describedby="`${a11yId}-t8-desc`" v-model="rpcEnabled" @change="onRpcEnabledChange" />
+        </div>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-info">
           <h4 class="setting-label" :id="`${a11yId}-t4`">Game activity (rich presence)</h4>
           <p class="setting-description" :id="`${a11yId}-t4-desc`">Show the game you're playing as your status. Detection runs locally; only the game name is shared, as your status text.</p>
         </div>
@@ -452,6 +463,49 @@ async function onLaunchAtLoginChange() {
   }
 }
 
+const RPC_STORAGE_KEY = 'harmony-rpc-enabled'
+
+function readRpcEnabled(): boolean {
+  try {
+    return localStorage.getItem(RPC_STORAGE_KEY) === 'true'
+  } catch (error) {
+    debug.warn('Failed to read external control setting:', error)
+    return false
+  }
+}
+
+function writeRpcEnabled(enabled: boolean): void {
+  try {
+    localStorage.setItem(RPC_STORAGE_KEY, String(enabled))
+  } catch (error) {
+    debug.warn('Failed to persist external control setting:', error)
+  }
+}
+
+interface RpcStatus {
+  enabled: boolean
+  actions: string[]
+}
+
+const rpcEnabled = ref(readRpcEnabled())
+
+async function onRpcEnabledChange(enabled: boolean) {
+  const previous = !enabled
+  writeRpcEnabled(enabled)
+  try {
+    const { invoke } = await import('@tauri-apps/api/core')
+    await invoke('rpc_set_enabled', { enabled })
+    if (enabled) {
+      toast.success(t('settings.advanced.rpc.enabledToast'))
+    }
+  } catch (error) {
+    debug.error('Failed to update external control setting:', error)
+    rpcEnabled.value = previous
+    writeRpcEnabled(previous)
+    toast.error(t('settings.advanced.rpc.failedToast'))
+  }
+}
+
 const showRunOnLoginModal = ref(false)
 const runOnLoginEnabled = ref(localStorage.getItem('harmony-run-on-login-enabled') === 'true')
 const runOnLoginUrl = computed(() => getRunOnLoginUrl())
@@ -586,6 +640,16 @@ onMounted(async () => {
       launchAtLogin.value = await invoke<boolean>('plugin:autostart|is_enabled')
     } catch (error) {
       debug.error('Failed to read launch-at-startup state:', error)
+    }
+
+    try {
+      const { invoke } = await import('@tauri-apps/api/core')
+      const status = await invoke<RpcStatus>('rpc_status')
+      if (status.enabled !== rpcEnabled.value) {
+        await invoke('rpc_set_enabled', { enabled: rpcEnabled.value })
+      }
+    } catch (error) {
+      debug.warn('Failed to sync external control state:', error)
     }
   }
 })
