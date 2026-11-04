@@ -2282,8 +2282,8 @@
       "reportBugDescription": "Open GitHub to report a bug or request a feature.",
       "rpc": {
         "name": "External control (RPC)",
-        "description": "Let local tools toggle your mic. Desktop only, local-only, and off by default.",
-        "hint": "From this computer, run harmony rpc togglemute.",
+        "description": "Let local tools toggle your mic, deafen, camera and screen share. Desktop only, local-only, and off by default.",
+        "hint": "From this computer, run harmony rpc togglemute (also toggledeaf, togglecamera, togglescreenshare).",
         "enabledToast": "External control enabled",
         "failedToast": "Failed to update external control"
       }

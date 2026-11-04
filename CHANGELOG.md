@@ -10,7 +10,8 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 ### Added
 - **Desktop external control (RPC), off by default.** Turn on **User
   settings → Advanced → Desktop app → External control (RPC)** and run
-  `harmony rpc togglemute` to toggle your own mic in a running desktop
+  `harmony rpc togglemute`, `toggledeaf`, `togglecamera` or
+  `togglescreenshare` to toggle your own call controls in a running desktop
   client; an RPC call never launches a new one. This makes a GNOME custom
   shortcut work on Wayland.
 - **One-command self-hosting.** `curl -fsSL https://raw.githubusercontent.com/y4my4my4m/harmony/master/self-host/install.sh | bash`

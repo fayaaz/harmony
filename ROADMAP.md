@@ -64,7 +64,7 @@ public.messages;`. Until then both transports run and dedupe by message id.)*
 11. **Group encryption: forward secrecy and membership changes.**
     Each sender has its own session key, with a distinct key per message, rotated every 100 messages or 7 days. Its gaps are no forward secrecy within a session, no post-compromise security, key distribution over static ECDH, and a re-share to every member on each membership change. See *Interoperable end-to-end encryption* under v2.0.
 
-- **Desktop RPC follow-ups.** Add `mute`, `unmute` and `toggledeaf` next to `togglemute`, show a tray indicator while external control is armed, and move to a dedicated local socket if reusing the single-instance `ExecuteCallback` route proves too broad.
+- **Desktop RPC follow-ups.** The `togglemute`, `toggledeaf`, `togglecamera` and `togglescreenshare` toggles now ship. Add explicit `mute`, `unmute`, `deaf` and `undeaf`, show a tray indicator while external control is armed, and move to a dedicated local socket if reusing the single-instance `ExecuteCallback` route proves too broad.
 
 ## Community features
 
