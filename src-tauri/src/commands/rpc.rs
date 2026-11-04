@@ -11,12 +11,18 @@ use tauri::{AppHandle, Emitter, Manager};
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum Action {
   ToggleMute,
+  ToggleDeafen,
+  ToggleCamera,
+  ToggleScreenShare,
 }
 
 impl Action {
   pub fn as_str(self) -> &'static str {
     match self {
       Action::ToggleMute => "togglemute",
+      Action::ToggleDeafen => "toggledeaf",
+      Action::ToggleCamera => "togglecamera",
+      Action::ToggleScreenShare => "togglescreenshare",
     }
   }
 }
@@ -29,6 +35,9 @@ pub fn parse_action(args: &[String]) -> Option<Action> {
   let index = args.iter().position(|arg| arg == "rpc")?;
   match args.get(index + 1).map(String::as_str) {
     Some("togglemute") => Some(Action::ToggleMute),
+    Some("toggledeaf") => Some(Action::ToggleDeafen),
+    Some("togglecamera") => Some(Action::ToggleCamera),
+    Some("togglescreenshare") => Some(Action::ToggleScreenShare),
     _ => None,
   }
 }
@@ -103,7 +112,12 @@ pub fn rpc_set_enabled(app: AppHandle, enabled: bool) -> Result<(), String> {
 pub fn rpc_status(app: AppHandle) -> RpcStatusDto {
   RpcStatusDto {
     enabled: enabled(&app),
-    actions: vec![Action::ToggleMute.as_str()],
+    actions: vec![
+      Action::ToggleMute.as_str(),
+      Action::ToggleDeafen.as_str(),
+      Action::ToggleCamera.as_str(),
+      Action::ToggleScreenShare.as_str(),
+    ],
   }
 }
 
@@ -122,11 +136,21 @@ mod tests {
     assert!(parse_action(&args(&["harmony", "rpc", "togglemute"])).is_some());
     assert!(parse_action(&args(&["rpc", "togglemute"])).is_some());
     assert!(parse_action(&args(&["--minimized", "rpc", "togglemute"])).is_some());
+    assert!(parse_action(&args(&["harmony", "rpc", "toggledeaf"])).is_some());
+    assert!(parse_action(&args(&["rpc", "toggledeaf"])).is_some());
+    assert!(parse_action(&args(&["--minimized", "rpc", "toggledeaf"])).is_some());
+    assert!(parse_action(&args(&["harmony", "rpc", "togglecamera"])).is_some());
+    assert!(parse_action(&args(&["rpc", "togglecamera"])).is_some());
+    assert!(parse_action(&args(&["--minimized", "rpc", "togglecamera"])).is_some());
+    assert!(parse_action(&args(&["harmony", "rpc", "togglescreenshare"])).is_some());
+    assert!(parse_action(&args(&["rpc", "togglescreenshare"])).is_some());
+    assert!(parse_action(&args(&["--minimized", "rpc", "togglescreenshare"])).is_some());
   }
 
   #[test]
   fn rejects_unknown_or_missing_action() {
     assert!(parse_action(&args(&["rpc", "deafen"])).is_none());
+    assert!(parse_action(&args(&["rpc", "camera"])).is_none());
     assert!(parse_action(&args(&["rpc"])).is_none());
     assert!(parse_action(&[]).is_none());
     assert!(parse_action(&args(&["--minimized"])).is_none());
