@@ -21,6 +21,10 @@ impl Action {
   }
 }
 
+pub fn is_rpc_invocation(args: &[String]) -> bool {
+  args.iter().any(|arg| arg == "rpc")
+}
+
 pub fn parse_action(args: &[String]) -> Option<Action> {
   let index = args.iter().position(|arg| arg == "rpc")?;
   match args.get(index + 1).map(String::as_str) {
@@ -105,7 +109,7 @@ pub fn rpc_status(app: AppHandle) -> RpcStatusDto {
 
 #[cfg(test)]
 mod tests {
-  use super::{flag_file_enabled, parse_action};
+  use super::{flag_file_enabled, is_rpc_invocation, parse_action};
   use std::fs;
   use std::path::PathBuf;
 
@@ -127,6 +131,14 @@ mod tests {
     assert!(parse_action(&[]).is_none());
     assert!(parse_action(&args(&["--minimized"])).is_none());
     assert!(parse_action(&args(&["harmony", "--rpc", "togglemute"])).is_none());
+  }
+
+  #[test]
+  fn detects_rpc_invocation_before_action_validation() {
+    assert!(is_rpc_invocation(&args(&["harmony", "rpc", "deafen"])));
+    assert!(is_rpc_invocation(&args(&["rpc"])));
+    assert!(!is_rpc_invocation(&args(&["harmony", "--minimized"])));
+    assert!(!is_rpc_invocation(&args(&["harmony", "--rpc", "togglemute"])));
   }
 
   fn temp_flag(name: &str) -> PathBuf {

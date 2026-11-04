@@ -177,7 +177,7 @@ pub fn run() {
       return;
     }
     let args: Vec<String> = std::env::args().collect();
-    if commands::rpc::parse_action(&args).is_some() {
+    if commands::rpc::is_rpc_invocation(&args) {
       eprintln!("no running Harmony instance");
       std::process::exit(1);
     }
