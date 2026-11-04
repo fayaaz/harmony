@@ -181,3 +181,5 @@ These shortcuts are listed in **User settings** → **Keybindings**, where each 
 4. If the keys are taken by another shortcut, Harmony says so and does not assign them; **Assign anyway** assigns them regardless.
 
 The reset button beside each shortcut restores its default, and **Reset all** restores every default. When **Toggle mute** or **Toggle deafen** sits on a single key, the page offers a button that moves them to Ctrl+Shift+M and Ctrl+Shift+D. Keybindings are stored per device.
+
+External control from desktop shortcuts is covered in [External control (RPC)](/use/rpc).

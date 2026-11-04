@@ -23,3 +23,4 @@ Harmony is a chat app you reach through an instance: a Harmony deployment at its
 | [Privacy and security](/use/privacy-security) | Two-factor authentication, end-to-end encryption and device pairing. |
 | [Accessibility](/use/accessibility) | Keyboard use, screen readers, high contrast and zoom. |
 | [Keyboard shortcuts](/use/keyboard-shortcuts) | Shortcut reference. |
+| [External control (RPC)](/use/rpc) | Controlling your own mic from a desktop shortcut, including GNOME custom shortcuts. |
